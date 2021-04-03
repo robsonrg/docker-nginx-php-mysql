@@ -1,6 +1,8 @@
-# Nginx PHP MySQL [![Build Status](https://travis-ci.org/nanoninja/docker-nginx-php-mysql.svg?branch=master)](https://travis-ci.org/nanoninja/docker-nginx-php-mysql) [![GitHub version](https://badge.fury.io/gh/nanoninja%2Fdocker-nginx-php-mysql.svg)](https://badge.fury.io/gh/nanoninja%2Fdocker-nginx-php-mysql)
+# Sample environment for using Docker
 
 Docker running Nginx, PHP-FPM, Composer, MySQL and PHPMyAdmin.
+
+> This project is based on the repo: https://github.com/nanoninja/docker-nginx-php-mysql
 
 ## Overview
 
@@ -16,19 +18,15 @@ Docker running Nginx, PHP-FPM, Composer, MySQL and PHPMyAdmin.
 
     We'll generate and configure SSL certificate for nginx before running server.
 
-4. [Configure Xdebug](#configure-xdebug) [`Optional`]
-
-    We'll configure Xdebug for IDE (PHPStorm or Netbeans).
-
-5. [Run the application](#run-the-application)
+4. [Run the application](#run-the-application)
 
     By this point we’ll have all the project pieces in place.
 
-6. [Use Makefile](#use-makefile) [`Optional`]
+5. [Use Makefile](#use-makefile) [`Optional`]
 
     When developing, you can use `Makefile` for doing recurrent operations.
 
-7. [Use Docker Commands](#use-docker-commands)
+6. [Use Docker Commands](#use-docker-commands)
 
     When running, you can use docker commands for doing recurrent operations.
 
@@ -50,7 +48,7 @@ All requisites should be available for your distribution. The most important are
 * [Docker](https://docs.docker.com/engine/installation/)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-Check if `docker-compose` is already installed by entering the following command : 
+Check if `docker-compose` is already installed by entering the following command :
 
 ```sh
 which docker-compose
@@ -76,10 +74,10 @@ sudo apt install build-essential
 
 * [Nginx](https://hub.docker.com/_/nginx/)
 * [MySQL](https://hub.docker.com/_/mysql/)
-* [PHP-FPM](https://hub.docker.com/r/nanoninja/php-fpm/)
+* [PHP-FPM](https://hub.docker.com/_/php/)
 * [Composer](https://hub.docker.com/_/composer/)
 * [PHPMyAdmin](https://hub.docker.com/r/phpmyadmin/phpmyadmin/)
-* [Generate Certificate](https://hub.docker.com/r/jacoelho/generate-certificate/)
+* [Generate Certificate](https://hub.docker.com/r/robsonrg/generate-certificate/)
 
 You should be careful when installing third party web servers such as MySQL or Nginx.
 
@@ -87,10 +85,10 @@ This project use the following ports :
 
 | Server     | Port |
 |------------|------|
+| Nginx      | 8080 |
+| Nginx SSL  | 4433 |
 | MySQL      | 8989 |
-| PHPMyAdmin | 8080 |
-| Nginx      | 8000 |
-| Nginx SSL  | 3000 |
+| PHPMyAdmin | 8081 |
 
 ___
 
@@ -99,7 +97,7 @@ ___
 To install [Git](http://git-scm.com/book/en/v2/Getting-Started-Installing-Git), download it and install following the instructions :
 
 ```sh
-git clone https://github.com/nanoninja/docker-nginx-php-mysql.git
+git clone https://github.com/robsonrg/docker-nginx-php-mysql.git
 ```
 
 Go to the project directory :
@@ -118,7 +116,6 @@ cd docker-nginx-php-mysql
 │   └── db
 │       ├── dumps
 │       └── mysql
-├── doc
 ├── docker-compose.yml
 ├── etc
 │   ├── nginx
@@ -151,7 +148,7 @@ If you modify the host name, do not forget to add it to the `/etc/hosts` file.
 1. Generate SSL certificates
 
     ```sh
-    source .env && docker run --rm -v $(pwd)/etc/ssl:/certificates -e "SERVER=$NGINX_HOST" jacoelho/generate-certificate
+    source .env && docker run --rm -v $(pwd)/etc/ssl:/certificates -e "SERVER=$NGINX_HOST" robsonrg/generate-certificate
     ```
 
 2. Configure Nginx
@@ -172,30 +169,10 @@ If you modify the host name, do not forget to add it to the `/etc/hosts` file.
 
 ___
 
-## Configure Xdebug
-
-If you use another IDE than [PHPStorm](https://www.jetbrains.com/phpstorm/) or [Netbeans](https://netbeans.org/), go to the [remote debugging](https://xdebug.org/docs/remote) section of Xdebug documentation.
-
-For a better integration of Docker to PHPStorm, use the [documentation](https://github.com/nanoninja/docker-nginx-php-mysql/blob/master/doc/phpstorm-macosx.md).
-
-1. Get your own local IP address :
-
-    ```sh
-    sudo ifconfig
-    ```
-
-2. Edit php file `etc/php/php.ini` and comment or uncomment the configuration as needed.
-
-3. Set the `remote_host` parameter with your IP :
-
-    ```sh
-    xdebug.remote_host=192.168.0.1 # your IP
-    ```
-___
 
 ## Run the application
 
-1. Copying the composer configuration file : 
+1. Copying the composer configuration file :
 
     ```sh
     cp web/app/composer.json.dist web/app/composer.json
@@ -215,9 +192,9 @@ ___
 
 3. Open your favorite browser :
 
-    * [http://localhost:8000](http://localhost:8000/)
-    * [https://localhost:3000](https://localhost:3000/) ([HTTPS](#configure-nginx-with-ssl-certificates) not configured by default)
-    * [http://localhost:8080](http://localhost:8080/) PHPMyAdmin (username: dev, password: dev)
+    * [http://localhost:8080](http://localhost:8000/)
+    * [https://localhost:4433](https://localhost:3000/) ([HTTPS](#configure-nginx-with-ssl-certificates) not configured by default)
+    * [http://localhost:8081](http://localhost:8080/) PHPMyAdmin (username: dev, password: dev)
 
 4. Stop and clear services
 
@@ -233,7 +210,6 @@ When developing, you can use [Makefile](https://en.wikipedia.org/wiki/Make_(soft
 
 | Name          | Description                                  |
 |---------------|----------------------------------------------|
-| apidoc        | Generate documentation of API                |
 | clean         | Clean directories for reset                  |
 | code-sniff    | Check the API with PHP Code Sniffer (`PSR2`) |
 | composer-up   | Update PHP dependencies with composer        |
@@ -274,12 +250,6 @@ docker run --rm -v $(pwd)/web/app:/app composer require symfony/yaml
 
 ```sh
 docker run --rm -v $(pwd)/web/app:/app composer update
-```
-
-### Generating PHP API documentation
-
-```sh
-docker run --rm -v $(pwd):/data phpdoc/phpdoc -i=vendor/ -d /data/web/app/src -t /data/web/app/doc
 ```
 
 ### Testing PHP application with PHPUnit
@@ -369,9 +339,3 @@ source .env && docker exec -i $(docker-compose ps -q mysqldb) mysql -u"$MYSQL_RO
     }
 ?>
 ```
-
-___
-
-## Help us
-
-Any thought, feedback or (hopefully not!)

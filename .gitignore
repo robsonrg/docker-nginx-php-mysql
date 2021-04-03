@@ -6,7 +6,6 @@
 web/app/composer.json
 web/app/composer.lock
 web/app/vendor/
-web/app/doc/
 web/app/report/
 data/
 
@@ -14,12 +13,6 @@ data/
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
-
-# Netbeans
-nbproject/
-/nbproject/
-/nbproject/private/
-/nbproject/private/private.properties
 
 # VSCode
 .vscode/
